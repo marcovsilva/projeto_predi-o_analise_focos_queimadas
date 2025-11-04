@@ -1,73 +1,57 @@
-# Predição e Análise de Focos de Queimadas no Brasil
+# Predição e Análise de Focos de Queimadas — TCC
 
-Este projeto tem como objetivo analisar e prever focos de queimadas no Brasil utilizando dados públicos do INPE, integrados via [basedosdados](https://basedosdados.org/). O pipeline inclui extração, limpeza, análise exploratória, visualização geográfica e temporal, geração de amostras para modelagem e comparação de modelos preditivos.
+Resumo curto  
+Notebook principal: [TCC/predição_analise_focos_queimadas.ipynb](TCC/predição_analise_focos_queimadas.ipynb)
 
-## Estrutura do Projeto
+Descrição  
+Este repositório contém um pipeline completo para extração, limpeza, análise exploratória, visualização e modelagem de focos de queimadas no Brasil, a partir dos microdados do INPE via basedosdados. O notebook realiza desde a consulta SQL até a comparação entre modelos (Logistic Regression, Random Forest, XGBoost, MLP).
 
-- `predição_analise_focos_queimadas.ipynb`: Notebook principal com todo o pipeline de análise e modelagem.
-- `dados_queimadas.csv`: Dados brutos extraídos da base INPE.
-- `dados_processados_para_modelo.csv`: Dados tratados e balanceados para treinamento dos modelos.
-- `resultados_cv_regressao_logistica.txt`, `resultados_cv_random_forest.txt`, `resultados_cv_mlp.txt`, `resultados_cv_xgboost.txt`: Resultados da validação cruzada dos modelos.
-- `comparacao_modelos_cv.txt`: Comparação final das métricas dos modelos.
-- `modelo_random_forest_final.pkl`: Modelo Random Forest treinado e salvo.
-- Outros arquivos de resultados e gráficos gerados durante a análise.
+Principais artefatos gerados
+- Dataset raw salvo: `dados_queimadas.csv` (gerado por [TCC/predição_analise_focos_queimadas.ipynb](TCC/predição_analise_focos_queimadas.ipynb))  
+- Dataset processado para modelos: `dados_processados_para_modelo.csv` (ver [`df_final`](TCC/predição_analise_focos_queimadas.ipynb))  
+- Modelos e resultados: `resultados_cv_regressao_logistica.txt`, `resultados_cv_random_forest.txt`, `resultados_cv_xgboost.txt`, `resultados_cv_mlp.txt`  
+- Modelo final (exemplo): `modelo_random_forest_final.pkl` (treinado como `modelo_rf_final` em [TCC/predição_analise_focos_queimadas.ipynb](TCC/predição_analise_focos_queimadas.ipynb))  
+- Gráficos importantes: `evolucao_loss_ultimo_fold_mlp.png` e figuras geradas no notebook
 
-## Principais Etapas
+Estrutura (relevante)
+- [TCC/predição_analise_focos_queimadas.ipynb](TCC/predição_analise_focos_queimadas.ipynb) — notebook principal (extração → EDA → geração de amostras "não fogo" → modelagem)  
+- [TCC/Readme.md](TCC/Readme.md) — README anterior (referência)  
+- [Projeto Estabilidade de Crédito/credit_risk_model_stability.ipynb](Projeto Estabilidade de Crédito/credit_risk_model_stability.ipynb) — outro projeto no workspace (referência)  
+- [Projeto Estabilidade de Crédito/README.md](Projeto Estabilidade de Crédito/README.md) — README do outro projeto
 
-1. **Extração dos Dados**
-   - Consulta SQL via `basedosdados` para obter informações detalhadas dos focos de queimadas, bioma, localização, condições meteorológicas e datas.
+Fluxo resumido de execução
+1. Executar a célula de instalação: `!pip install basedosdados` (no topo do notebook).  
+2. Rodar consulta via [`basedosdados.read_sql`](TCC/predição_analise_focos_queimadas.ipynb) para obter os microdados (billing_id deve ser configurado).  
+3. Salvar e carregar o CSV (`df` → limpeza → `df_limpo`) — variáveis: [`df`](TCC/predição_analise_focos_queimadas.ipynb), [`df_limpo`](TCC/predição_analise_focos_queimadas.ipynb).  
+4. Gerar amostras negativas e construir dataset para modelagem (`df_final`) e salvar em `dados_processados_para_modelo.csv`.  
+5. Treinar e validar modelos (Logistic, XGBoost, RandomForest, MLP) com validação cruzada e hold-out.  
+6. Salvar métricas e modelos (`resultados_cv_*.txt`, `modelo_random_forest_final.pkl`).
 
-2. **Limpeza e Pré-processamento**
-   - Substituição de valores inválidos.
-   - Remoção de linhas com dados essenciais faltantes.
-   - Criação de amostras negativas ("não fogo") para balanceamento.
+Dependências principais
+- Python 3.8+  
+- pandas, numpy, matplotlib, seaborn, scikit-learn, xgboost, tensorflow, cuml, basedosdados, joblib
 
-3. **Análise Exploratória**
-   - Estatísticas descritivas, verificação de nulos e duplicados.
-   - Visualizações: distribuição temporal, espacial, sazonalidade, intensidade por bioma.
-
-4. **Modelagem Preditiva**
-   - Geração de dataset balanceado para classificação binária (fogo vs. não fogo).
-   - Treinamento e validação cruzada de quatro modelos:
-     - Regressão Logística (cuML)
-     - Random Forest
-     - MLP (Keras/TensorFlow)
-     - XGBoost
-   - Avaliação por acurácia, precisão, recall e F1-score.
-
-5. **Comparação de Modelos**
-   - Leitura automática dos resultados.
-   - Geração de tabela comparativa e seleção do melhor modelo.
-
-6. **Análise de Importância das Variáveis**
-   - Feature importance do Random Forest para identificar os fatores mais relevantes.
-
-## Como Executar
-
-1. Instale as dependências:
+Como executar localmente (resumo)
+1. Criar ambiente Python e instalar dependências:
    ```sh
-   pip install basedosdados pandas numpy matplotlib seaborn scikit-learn tensorflow cuml xgboost
+   pip install basedosdados pandas numpy matplotlib seaborn scikit-learn xgboost tensorflow cuml joblib
    ```
-2. Configure o projeto de billing do Google Cloud para consultas SQL públicas.
-3. Execute o notebook `predição_analise_focos_queimadas.ipynb` sequencialmente.
+2. Abrir e executar sequencialmente [TCC/predição_analise_focos_queimadas.ipynb](TCC/predição_analise_focos_queimadas.ipynb) no Jupyter ou VSCode.  
+3. Ajustar `billing_id` para consultas via `basedosdados` antes de rodar a query.
 
-## Resultados Esperados
+Observações e recomendações rápidas
+- O notebook cria amostras de "não fogo" artificialmente; considerar validação adicional com dados externos.  
+- A variável `potencia_radiativa_fogo` é tratada como vazamento potencial em algumas etapas — foi testado com e sem ela; revisar esse ponto dependendo do objetivo.  
+- Monitorar overfitting checando métricas de treino vs validação (o notebook já implementa `return_train_score=True` em CV e avaliação de folds).  
+- Para reprodução em máquina sem GPU/TPU, ajustar treino de MLP (batch/epochs) ou usar apenas modelos CPU-friendly.
 
-- Visualizações claras sobre onde, quando e por que ocorrem queimadas.
-- Modelos preditivos comparados por validação cruzada.
-- Identificação dos principais fatores que influenciam a ocorrência de fogo.
+Referências no workspace
+- Notebook principal: [TCC/predição_analise_focos_queimadas.ipynb](TCC/predição_analise_focos_queimadas.ipynb)  
+- Outro projeto relacionado: [Projeto Estabilidade de Crédito/credit_risk_model_stability.ipynb](Projeto Estabilidade de Crédito/credit_risk_model_stability.ipynb)  
+- README do outro projeto: [Projeto Estabilidade de Crédito/README.md](Projeto Estabilidade de Crédito/README.md)
 
-## Limitações e Próximos Passos
+Autor
+- Marcos Vinicius da Silva
 
-- O balanceamento entre classes é artificial (amostras negativas geradas).
-- O pipeline pode ser expandido para incluir variáveis climáticas externas e séries temporais mais avançadas.
-- Testar outros algoritmos e técnicas de feature engineering.
-
-## Autor
-
-Marcos Vinicius da Silva
-
----
-
-**Resumo:**  
-Este projeto oferece uma abordagem completa para análise e predição de queimadas, combinando ciência de dados, visualização e machine learning, com código aberto e dados públicos.
+Licença e uso
+- Dados públicos (INPE / basedosdados). Ajustar licença do código conforme preferir.
