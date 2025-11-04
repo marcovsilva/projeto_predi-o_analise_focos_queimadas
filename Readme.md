@@ -7,8 +7,10 @@ Este projeto tem como objetivo analisar e prever focos de queimadas no Brasil ut
 - `predição_analise_focos_queimadas.ipynb`: Notebook principal com todo o pipeline de análise e modelagem.
 - `dados_queimadas.csv`: Dados brutos extraídos da base INPE.
 - `dados_processados_para_modelo.csv`: Dados tratados e balanceados para treinamento dos modelos.
-- `resultados_cv_regressao_logistica.txt`, `resultados_cv_random_forest.txt`, `resultados_cv_mlp.txt`: Resultados da validação cruzada dos modelos.
+- `resultados_cv_regressao_logistica.txt`, `resultados_cv_random_forest.txt`, `resultados_cv_mlp.txt`, `resultados_cv_xgboost.txt`: Resultados da validação cruzada dos modelos.
 - `comparacao_modelos_cv.txt`: Comparação final das métricas dos modelos.
+- `modelo_random_forest_final.pkl`: Modelo Random Forest treinado e salvo.
+- Outros arquivos de resultados e gráficos gerados durante a análise.
 
 ## Principais Etapas
 
@@ -26,10 +28,11 @@ Este projeto tem como objetivo analisar e prever focos de queimadas no Brasil ut
 
 4. **Modelagem Preditiva**
    - Geração de dataset balanceado para classificação binária (fogo vs. não fogo).
-   - Treinamento e validação cruzada de três modelos:
+   - Treinamento e validação cruzada de quatro modelos:
      - Regressão Logística (cuML)
      - Random Forest
      - MLP (Keras/TensorFlow)
+     - XGBoost
    - Avaliação por acurácia, precisão, recall e F1-score.
 
 5. **Comparação de Modelos**
@@ -43,7 +46,7 @@ Este projeto tem como objetivo analisar e prever focos de queimadas no Brasil ut
 
 1. Instale as dependências:
    ```sh
-   pip install basedosdados pandas numpy matplotlib seaborn scikit-learn tensorflow cuml
+   pip install basedosdados pandas numpy matplotlib seaborn scikit-learn tensorflow cuml xgboost
    ```
 2. Configure o projeto de billing do Google Cloud para consultas SQL públicas.
 3. Execute o notebook `predição_analise_focos_queimadas.ipynb` sequencialmente.
